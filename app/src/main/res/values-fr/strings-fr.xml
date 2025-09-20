@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AlbanManage</string>
+    <string name="app_tagline">Gestion professionnelle des stocks</string>
+
+    <!-- Summary Cards -->
+    <string name="total_before">Total avant</string>
+    <string name="total_after">Total après</string>
+
+    <!-- Product Form -->
+    <string name="unit_price_pack">Unité : %.2f MAD • Paquet : %d unités</string>
+    <string name="units">Unités</string>
+    <string name="packs">Paquets</string>
+    <string name="expired">Expiré</string>
+    <string name="disabled">Désactivé</string>
+    <string name="total_units">Total des unités</string>
+    <string name="before_deduction">Avant déduction</string>
+    <string name="after_deduction">Après déduction</string>
+
+    <!-- Button -->
+    <string name="generate_pdf">Générer la facture PDF</string>
+    <string name="generating_pdf">Génération du PDF...</string>
+
+    <!-- Invoice Dialog -->
+    <string name="generate_invoice">Générer la facture</string>
+    <string name="invoice_summary">Résumé de la facture :</string>
+    <string name="products_count">Produits : %d</string>
+    <string name="total_before_amount">Total avant : %.2f MAD</string>
+    <string name="total_after_amount">Total après : %.2f MAD</string>
+    <string name="confirm_generate">Générer</string>
+    <string name="cancel">Annuler</string>
+
+    <!-- Toasts -->
+    <string name="no_products_error">Veuillez remplir au moins un produit</string>
+    <string name="pdf_saved">PDF enregistré dans Téléchargements : %s</string>
+    <string name="permission_denied">Permission refusée : Veuillez accorder l’accès au stockage</string>
+    <string name="pdf_save_failed">Échec de l’enregistrement du PDF : %s</string>
+    <string name="unexpected_error">Erreur inattendue : %s</string>
+
+    <!-- Navigation Items -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_history">Historique</string>
+    <string name="nav_settings">Paramètres</string>
+
+    <!-- PDF Content -->
+    <string name="pdf_invoice_title">AlbanManage_Invoice_%1$s.pdf</string>
+    <string name="pdf_date">Date : %s</string>
+    <string name="pdf_product">Produit</string>
+    <string name="pdf_units">Unités</string>
+    <string name="pdf_packs">Paquets</string>
+    <string name="pdf_quantity">Quantité</string>
+    <string name="pdf_expired">Expiré</string>
+    <string name="pdf_disabled">Désactivé</string>
+    <string name="pdf_price">Prix</string>
+    <string name="pdf_total">Total</string>
+    <string name="pdf_grand_total">Total général : %.2f MAD</string>
+    <string name="pdf_footer">Généré par AlbanManage</string>
+
+
+    <!-- Product Names -->
+    <string name="product_lait_05l">Lait 0.5L</string>
+    <string name="product_croissance">Croissance</string>
+    <string name="product_smoozy">Smoozy</string>
+    <string name="product_lben_025l">Lben 0.25L</string>
+    <string name="product_raibi">Raibi</string>
+    <string name="product_lben_05l">Lben 0.5L</string>
+    <string name="product_danon">Danon</string>
+</resources>

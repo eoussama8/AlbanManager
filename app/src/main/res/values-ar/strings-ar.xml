@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ألبان مانيج</string>
+    <string name="app_tagline">إدارة المخزون الاحترافية</string>
+
+    <!-- Summary Cards -->
+    <string name="total_before">الإجمالي قبل</string>
+    <string name="total_after">الإجمالي بعد</string>
+
+    <!-- Product Form -->
+    <string name="unit_price_pack">الوحدة: %.2f د.م • العبوة: %d وحدات</string>
+    <string name="units">وحدات</string>
+    <string name="packs">عبوات</string>
+    <string name="expired">منتهي الصلاحية</string>
+    <string name="disabled">معطل</string>
+    <string name="total_units">إجمالي الوحدات</string>
+    <string name="before_deduction">قبل الخصم</string>
+    <string name="after_deduction">بعد الخصم</string>
+
+    <!-- Button -->
+    <string name="generate_pdf">إنشاء فاتورة PDF</string>
+    <string name="generating_pdf">جارٍ إنشاء PDF...</string>
+
+    <!-- Invoice Dialog -->
+    <string name="generate_invoice">إنشاء الفاتورة</string>
+    <string name="invoice_summary">ملخص الفاتورة:</string>
+    <string name="products_count">المنتجات: %d</string>
+    <string name="total_before_amount">الإجمالي قبل: %.2f د.م</string>
+    <string name="total_after_amount">الإجمالي بعد: %.2f د.م</string>
+    <string name="confirm_generate">إنشاء</string>
+    <string name="cancel">إلغاء</string>
+
+    <!-- Toasts -->
+    <string name="no_products_error">يرجى تعبئة منتج واحد على الأقل</string>
+    <string name="pdf_saved">تم حفظ PDF في التنزيلات: %s</string>
+    <string name="permission_denied">تم رفض الإذن: يرجى منح الوصول إلى التخزين</string>
+    <string name="pdf_save_failed">فشل حفظ PDF: %s</string>
+    <string name="unexpected_error">خطأ غير متوقع: %s</string>
+
+
+
+    <!-- Navigation Items -->
+    <string name="nav_home">الرئيسية</string>
+    <string name="nav_history">السجل</string>
+    <string name="nav_settings">الإعدادات</string>
+    <!-- PDF Content -->
+    <string name="pdf_invoice_title">AlbanManage_Invoice_%1$s.pdf</string>
+    <string name="pdf_date">التاريخ: %s</string>
+    <string name="pdf_product">المنتج</string>
+    <string name="pdf_units">وحدات</string>
+    <string name="pdf_packs">عبوات</string>
+    <string name="pdf_quantity">الكمية</string>
+    <string name="pdf_expired">منتهي الصلاحية</string>
+    <string name="pdf_disabled">معطل</string>
+    <string name="pdf_price">السعر</string>
+    <string name="pdf_total">الإجمالي</string>
+    <string name="pdf_grand_total">الإجمالي الكلي: %.2f د.م</string>
+    <string name="pdf_footer">تم إنشاؤه بواسطة ألبان مانيج</string>
+
+
+    <!-- Product Names -->
+    <string name="product_lait_05l">حليب 0.5 لتر</string>
+    <string name="product_croissance">كرواسانس</string>
+    <string name="product_smoozy">سموزي</string>
+    <string name="product_lben_025l">لبن 0.25 لتر</string>
+    <string name="product_raibi">رايبي</string>
+    <string name="product_lben_05l">لبن 0.5 لتر</string>
+    <string name="product_danon">دانون</string>
+</resources>
