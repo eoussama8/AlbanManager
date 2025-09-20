@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -44,6 +42,10 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 import java.io.FileOutputStream
@@ -100,7 +102,7 @@ fun HomeScreen() {
         }
 
         // Product forms
-        items(ProductRepository.products) { product ->
+        items(ProductRepository.getProducts(context)) { product ->
             AnimatedVisibility(
                 visible = true,
                 enter = slideInVertically() + fadeIn(),
@@ -121,7 +123,11 @@ fun HomeScreen() {
                     if (productDataMap.isNotEmpty()) {
                         showInvoiceDialog = true
                     } else {
-                        Toast.makeText(context, R.string.no_products_error, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.no_products_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 modifier = Modifier
@@ -189,19 +195,23 @@ fun HomeScreen() {
                     onClick = {
                         showInvoiceDialog = false
                         isGeneratingPdf = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val pdfBytes = generatePdfBytes(productDataMap.values.toList(), context)
+                            withContext(Dispatchers.Main) {
+                                val title = context.getString(
+                                    R.string.pdf_invoice_title,
+                                    java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+                                )
 
-                        val pdfBytes = generatePdfBytes(productDataMap.values.toList())
-                        val fileName = context.getString(
-                            R.string.pdf_invoice_title,
-                            LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        )
+                                savePdfToDownloads(
+                                    context,
+                                    title,
+                                    pdfBytes
+                                ) {
+                                    isGeneratingPdf = false
+                                }
 
-                        savePdfToDownloads(
-                            context,
-                            fileName,
-                            pdfBytes
-                        ) {
-                            isGeneratingPdf = false
+                            }
                         }
                     }
                 ) {
@@ -654,7 +664,7 @@ fun savePdfToDownloads(
         onComplete()
     }
 }
-fun generatePdfBytes(productList: List<ProductData>): ByteArray {
+fun generatePdfBytes(productList: List<ProductData>, context: Context): ByteArray {
     val document = PdfDocument()
     var pageNumber = 1
     var page = document.startPage(PdfDocument.PageInfo.Builder(595, 842, pageNumber).create())
