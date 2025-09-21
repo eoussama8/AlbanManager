@@ -7,16 +7,14 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.albanmanage.SettingsScreen.dataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
 enum class ThemeMode {
     LIGHT, DARK, SYSTEM
 }
-
 class ThemePreferences(private val context: Context) {
     private val dataStore = context.dataStore
     private val THEME_KEY = stringPreferencesKey("theme_mode")

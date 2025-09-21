@@ -7,3 +7,5 @@ val AlbaneRed = Color(0xFFE30613)    // red underline in logo
 val AlbaneWhite = Color(0xFFFFFFFF)  // background white
 val AlbaneLightBlue = Color(0xFF8CC6F7) // optional lighter shade
 val AlbaneGrey = Color(0xFF707070)   // neutral grey for text
+val AlbaneGreen = Color(0xFF4CAF50)
+

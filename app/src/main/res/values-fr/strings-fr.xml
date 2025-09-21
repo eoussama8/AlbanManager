@@ -8,7 +8,7 @@
     <string name="total_after">Total après</string>
 
     <!-- Product Form -->
-    <string name="unit_price_pack">Unité : %.2f MAD • Paquet : %d unités</string>
+    <string name="unit_price_pack">Unité : %1$.2f MAD • Paquet : %2$d unités</string>
     <string name="units">Unités</string>
     <string name="packs">Paquets</string>
     <string name="expired">Expiré</string>
@@ -24,18 +24,18 @@
     <!-- Invoice Dialog -->
     <string name="generate_invoice">Générer la facture</string>
     <string name="invoice_summary">Résumé de la facture :</string>
-    <string name="products_count">Produits : %d</string>
-    <string name="total_before_amount">Total avant : %.2f MAD</string>
-    <string name="total_after_amount">Total après : %.2f MAD</string>
+    <string name="products_count">Produits : %1$d</string>
+    <string name="total_before_amount">Total avant : %1$.2f MAD</string>
+    <string name="total_after_amount">Total après : %1$.2f MAD</string>
     <string name="confirm_generate">Générer</string>
     <string name="cancel">Annuler</string>
 
     <!-- Toasts -->
     <string name="no_products_error">Veuillez remplir au moins un produit</string>
-    <string name="pdf_saved">PDF enregistré dans Téléchargements : %s</string>
+    <string name="pdf_saved">PDF enregistré dans Téléchargements : %1$s</string>
     <string name="permission_denied">Permission refusée : Veuillez accorder l’accès au stockage</string>
-    <string name="pdf_save_failed">Échec de l’enregistrement du PDF : %s</string>
-    <string name="unexpected_error">Erreur inattendue : %s</string>
+    <string name="pdf_save_failed">Échec de l’enregistrement du PDF : %1$s</string>
+    <string name="unexpected_error">Erreur inattendue : %1$s</string>
 
     <!-- Navigation Items -->
     <string name="nav_home">Accueil</string>
@@ -44,7 +44,7 @@
 
     <!-- PDF Content -->
     <string name="pdf_invoice_title">AlbanManage_Invoice_%1$s.pdf</string>
-    <string name="pdf_date">Date : %s</string>
+    <string name="pdf_date">Date : %1$s</string>
     <string name="pdf_product">Produit</string>
     <string name="pdf_units">Unités</string>
     <string name="pdf_packs">Paquets</string>
@@ -53,9 +53,8 @@
     <string name="pdf_disabled">Désactivé</string>
     <string name="pdf_price">Prix</string>
     <string name="pdf_total">Total</string>
-    <string name="pdf_grand_total">Total général : %.2f MAD</string>
+    <string name="pdf_grand_total">Total général : %1$.2f MAD</string>
     <string name="pdf_footer">Généré par AlbanManage</string>
-
 
     <!-- Product Names -->
     <string name="product_lait_05l">Lait 0.5L</string>
@@ -65,4 +64,37 @@
     <string name="product_raibi">Raibi</string>
     <string name="product_lben_05l">Lben 0.5L</string>
     <string name="product_danon">Danon</string>
+
+    <!-- History Screen -->
+    <string name="history_title">Historique</string>
+    <string name="history_subtitle">Vos activités récentes</string>
+    <string name="no_history_found">Aucun élément d\'historique trouvé</string>
+    <string name="open_pdf">Ouvrir le PDF</string>
+    <string name="share_pdf">Partager le PDF</string>
+    <string name="error_opening_pdf">Erreur lors de l\'ouverture du PDF : %1$s</string>
+    <string name="error_sharing_pdf">Erreur lors du partage du PDF : %1$s</string>
+    <string name="error_file_not_found">Fichier non trouvé</string>
+    <string name="storage_permission_required">L\'autorisation de stockage est requise pour enregistrer le fichier.</string>
+
+    <string name="loading_history">Chargement de l\'historique...</string>
+
+    <!-- Permissions -->
+    <string name="grant_permission">Accorder la permission</string>
+
+    <!-- Empty States -->
+    <string name="no_history_description">Les PDFs générés apparaîtront ici</string>
+    <string name="downloads_folder_not_found">Dossier de téléchargements introuvable</string>
+
+    <!-- Errors -->
+    <string name="retry">Réessayer</string>
+    <string name="file_not_found">Fichier introuvable</string>
+    <string name="no_pdf_reader">Aucune application de lecture PDF trouvée</string>
+
+    <!-- Delete PDF -->
+    <string name="delete_pdf_title">Supprimer le PDF</string>
+    <string name="delete_pdf_message">Êtes-vous sûr de vouloir supprimer "%1$s" ?</string>
+    <string name="delete">Supprimer</string>
+    <string name="pdf_deleted_success">PDF supprimé avec succès</string>
+    <string name="pdf_delete_failed">Échec de la suppression du PDF</string>
+
 </resources>

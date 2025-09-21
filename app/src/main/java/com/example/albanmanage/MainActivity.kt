@@ -5,57 +5,60 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import com.example.albanmanage.ui.theme.AlbaneBlue
-import com.example.albanmanage.ui.theme.AlbaneGrey
-import com.example.albanmanage.ui.theme.AlbaneWhite
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.example.albanmanage.HistoryScreen.HistoryScreen
 import com.example.albanmanage.HomeScreen.HomeScreen
+import com.example.albanmanage.SettingsScreen.SettingsRepository
 import com.example.albanmanage.SettingsScreen.SettingsScreen
 import com.example.albanmanage.components.BottomNavigationBar
 import com.example.albanmanage.components.NavItem
-import com.example.albanmanage.data.ThemePreferences
+import com.example.albanmanage.data.ThemeMode
 import com.example.albanmanage.ui.theme.AlbanManageTheme
 
-
 class MainActivity : ComponentActivity() {
-    private lateinit var themePreferences: ThemePreferences
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        themePreferences = ThemePreferences(this)
         enableEdgeToEdge()
 
+        val settingsRepository = SettingsRepository(applicationContext)
+
         setContent {
-            AlbanManageTheme(themePreferences = themePreferences) {
-                MainScreenWithNavigation()
+            // Observe selected language
+            val selectedLanguage by settingsRepository.language.collectAsState(initial = "en")
+
+            AlbanManageTheme {
+                // Pass language state to MainScreen
+                MainScreenWithNavigation(
+                    settingsRepository = settingsRepository,
+                    currentLanguage = selectedLanguage,
+                    onLanguageChanged = { newLang ->
+                        lifecycleScope.launch {
+                            settingsRepository.saveLanguage(newLang)
+                        }
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainScreenWithNavigation() {
+fun MainScreenWithNavigation(
+    settingsRepository: SettingsRepository,
+    currentLanguage: String,
+    onLanguageChanged: (String) -> Unit
+) {
     var selectedIndex by remember { mutableStateOf(0) }
 
-    // Navigation items - replace R.drawable.ic_* with your actual drawable resources
     val navItems = listOf(
         NavItem("Home", R.drawable.home, "home"),
         NavItem("History", R.drawable.history, "history"),
@@ -63,36 +66,25 @@ fun MainScreenWithNavigation() {
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavigationBar(
                 items = navItems,
                 selectedIndex = selectedIndex,
-                onItemSelected = { index ->
-                    selectedIndex = index
-                }
+                onItemSelected = { selectedIndex = it }
             )
         }
     ) { innerPadding ->
-        // Main content based on selected tab
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(AlbaneWhite),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
         ) {
             when (selectedIndex) {
-                0 -> HomeScreen()
-                1 -> HistoryScreen()
-                2 -> SettingsScreen()
+                0 -> HomeScreen(currentLanguage) // Pass language
+                1 -> HistoryScreen(currentLanguage)
+                2 -> SettingsScreen(
+                    settingsRepository = settingsRepository,
+                    onLanguageChanged = onLanguageChanged
+                )
             }
         }
     }
 }
-
-
-
-
-
-

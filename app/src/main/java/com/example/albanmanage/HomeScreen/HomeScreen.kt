@@ -50,6 +50,7 @@ import kotlinx.coroutines.withContext
 
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.Locale
 
 data class ProductData(
     val name: String,
@@ -66,11 +67,21 @@ data class ProductData(
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(currentLanguage: String) {
+
+    // Apply language locale dynamically
+
     val context = LocalContext.current
     val productDataMap = remember { mutableStateMapOf<String, ProductData>() }
     var isGeneratingPdf by remember { mutableStateOf(false) }
     var showInvoiceDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(currentLanguage) {
+        val locale = Locale(currentLanguage)
+        Locale.setDefault(locale)
+        val config = context.resources.configuration
+        config.setLocale(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    }
 
     // Calculate totals
     fun calculateGrandTotals(productMap: Map<String, ProductData>): Pair<Double, Double> {
@@ -238,67 +249,63 @@ fun EnhancedHeader() {
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(24.dp)
+        // Wrap content with Box if you want alignment inside the Card
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
         ) {
-            // Logo
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(AlbaneBlue),
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(24.dp)
             ) {
-                Text(
-                    text = "AM",
-                    color = Color.White,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.app_name),
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                color = AlbaneBlue
-            )
-
-            Text(
-                text = stringResource(R.string.app_tagline),
-                fontSize = 14.sp,
-                color = AlbaneGrey,
-                fontWeight = FontWeight.Medium
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Date
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .background(
-                        AlbaneBlue.copy(alpha = 0.1f),
-                        RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_calendar),
+                Image(
+                    painter = painterResource(R.drawable.logo),
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = AlbaneBlue
+                    modifier = Modifier.size(150.dp),
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")),
+                    text = stringResource(R.string.app_name),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AlbaneBlue
+                )
+
+                Text(
+                    text = stringResource(R.string.app_tagline),
                     fontSize = 14.sp,
-                    color = AlbaneBlue,
+                    color = AlbaneGrey,
                     fontWeight = FontWeight.Medium
                 )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Date
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .background(
+                            AlbaneBlue.copy(alpha = 0.1f),
+                            RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_calendar),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = AlbaneBlue
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = LocalDate.now().format(
+                            DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
+                        ),
+                        fontSize = 14.sp,
+                        color = AlbaneBlue,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
         }
     }
@@ -337,45 +344,53 @@ fun SummaryCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.shadow(4.dp, RoundedCornerShape(16.dp)),
+        modifier = modifier
+            .shadow(4.dp, RoundedCornerShape(16.dp)),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(color.copy(alpha = 0.1f)),
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp),
-                    tint = color
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(color.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(iconRes),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = color
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = title,
+                    fontSize = 12.sp,
+                    color = AlbaneGrey,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Text(
+                    text = stringResource(R.string.total_before_amount, amount)
+                        .replace("Total Before", ""),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = color,
+                    textAlign = TextAlign.Center
                 )
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = title,
-                fontSize = 12.sp,
-                color = AlbaneGrey,
-                fontWeight = FontWeight.Medium
-            )
-
-            Text(
-                text = stringResource(R.string.total_before_amount, amount).replace("Total Before", ""),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = color,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
