@@ -95,4 +95,54 @@
     <string name="delete">حذف</string>
     <string name="pdf_deleted_success">تم حذف ملف PDF بنجاح</string>
     <string name="pdf_delete_failed">فشل في حذف ملف PDF</string>
+
+
+
+    <!-- Butter -->
+    <string name="beurre_carton_25kg">زبدة كرتون 2,5كغ - لو بون ليه مراكش</string>
+    <string name="beurre_albane_1kg">زبدة ألبان 1 كغ</string>
+
+
+    <!-- Desserts -->
+    <string name="flany_caramel_80g">ألبان فلاني كراميل 80 غ</string>
+    <string name="creme_dessert_chocolat_80g">ألبا غورميه كريم حلوى الشوكولاتة 80 غ</string>
+    <string name="panna_cotta_fruits_rouges_80g">بانّا كوتا فلان فواكه حمراء 80 غ</string>
+
+    <!-- Juices -->
+    <string name="fresh_o_juice_orange_160g">فريش أو عصير برتقال 160 غ</string>
+    <string name="fresh_pulp_juice_orange_carton_250g">فريش بولب عصير برتقال كرتون 250 غ</string>
+    <string name="fresh_pulp_juice_orange_1l">فريش بولب عصير برتقال 1 لتر</string>
+
+    <!-- Milk & Dairy -->
+    <string name="lait_demiereme_albane_485g">ألبان حليب نصف خالي 485 غ</string>
+    <string name="leben_carton_450g">ألبان لَبَن كرتون 450 غ</string>
+    <string name="leben_sachet_450g">ألبان لَبَن كيس 450 غ</string>
+    <string name="raib_vanille_450g">رايب ألبان فانيليا 450 غ</string>
+    <string name="lait_uht_entier_12_litre">حليب UHT ألبان كامل 1/2 لتر</string>
+
+    <!-- Smoothies & Drinks -->
+    <string name="smoozy_pinacolada_440g">ألبان سموزي بيناكولادا 440 غ</string>
+    <string name="moniich_avocat_amande_440g">ألبان مونييش زبدة أفوكادو لوز 440 غ</string>
+    <string name="moniich_banane_sachet_215g">ألبان مونييش موز كيس 215 غ</string>
+
+    <!-- Yogurts & Drinks -->
+    <string name="piko_raibi_grenadine_75g">ألبان بيكو رايبي جرانادين 75 غ</string>
+    <string name="piko_yaourt_boisson_vanille_140g">ألبان بيكو زبادي شراب فانيليا 140 غ</string>
+    <string name="yaourt_boisson_fraise_170g">ألبا جو زبادي شراب فراولة 170 غ</string>
+    <string name="raibi_grenadine_165g">ألبان رايبي جرانادين 165 غ</string>
+    <string name="moniich_carton_fraise_260g">ألبان مونييش كرتون فراولة 260 غ</string>
+    <string name="nice_ferme_banane_110g">ألبان نايس موز 110 غ</string>
+    <string name="yaourt_brosse_fraise_110g">ألبا كريم زبادي مخلوط فراولة 110 غ</string>
+    <string name="piko_brosse_banane_60g">ألبان بيكو زبادي مخلوط موز 60 غ</string>
+    <string name="fruits_brosse_cereales_110g">ألبا فروتس زبادي مخلوط حبوب 110 غ</string>
+    <string name="grec_muesli_110g">ألبان زبادي يوناني موسلي 110 غ</string>
+    <string name="jayed_ferme_vanille_110g">ألبان جاييد زبادي ثابت فانيليا 110 غ</string>
+
+    <string name="search_placeholder">البحث في ملفات PDF...</string>
+    <string name="search">بحث</string>
+
+    <string name="error_loading_files">خطأ في تحميل الملفات: %s</string>
+
+
+    <string name="confirm_generate_invoice">هل أنت متأكد أنك تريد إنشاء الفاتورة؟</string>
 </resources>

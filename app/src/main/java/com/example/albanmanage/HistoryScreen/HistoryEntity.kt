@@ -5,10 +5,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "history")
 data class HistoryEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey val id: Long = 0,
     val actionType: String,
     val fileName: String,
-    val date: Long, // Stored as epoch milliseconds
+    val filePath: String = "", // Add this field
+    val date: Long,
     val totalBefore: Double,
     val totalAfter: Double,
     val productCount: Int

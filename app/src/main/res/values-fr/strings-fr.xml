@@ -47,10 +47,10 @@
     <string name="pdf_date">Date : %1$s</string>
     <string name="pdf_product">Produit</string>
     <string name="pdf_units">Unités</string>
-    <string name="pdf_packs">Paquets</string>
+    <string name="pdf_packs">Caisse</string>
     <string name="pdf_quantity">Quantité</string>
     <string name="pdf_expired">Expiré</string>
-    <string name="pdf_disabled">Désactivé</string>
+    <string name="pdf_disabled">Défaut</string>
     <string name="pdf_price">Prix</string>
     <string name="pdf_total">Total</string>
     <string name="pdf_grand_total">Total général : %1$.2f MAD</string>
@@ -96,5 +96,58 @@
     <string name="delete">Supprimer</string>
     <string name="pdf_deleted_success">PDF supprimé avec succès</string>
     <string name="pdf_delete_failed">Échec de la suppression du PDF</string>
+
+
+    <string name="beurre_carton_25kg">BEURRE CARTON 2,5kg </string>
+    <string name="beurre_albane_1kg">BEURRE ALBANE 1 KG</string>
+
+
+    <!-- Desserts -->
+    <string name="flany_caramel_80g">Albane FLANY Caramel 80 g</string>
+    <string name="creme_dessert_chocolat_80g">ALBA GOURMET Crème dessert chocolat 80 g</string>
+    <string name="panna_cotta_fruits_rouges_80g">PANNA COTTA Flan fruits rouges 80 g</string>
+
+    <!-- Juices -->
+    <string name="fresh_o_juice_orange_160g">FRESH O Fruits Jus orange 160 g</string>
+    <string name="fresh_pulp_juice_orange_carton_250g">Fresh pulp Jus orange carton 250 g</string>
+    <string name="fresh_pulp_juice_orange_1l">Fresh pulp Jus orange 1 Litre</string>
+
+    <!-- Milk & Dairy -->
+    <string name="lait_demiereme_albane_485g">ALBANE Lait demi-écrémé carton 485 g</string>
+    <string name="leben_carton_450g">ALBANE Leben carton 450 g</string>
+    <string name="leben_sachet_450g">ALBANE Leben sachet 450 g</string>
+    <string name="raib_vanille_450g">RAÏB ALBANE VANILLE 450G</string>
+    <string name="lait_uht_entier_12_litre">Lait UHT Albane 1/2 Litre - Entier</string>
+
+    <!-- Smoothies & Drinks -->
+    <string name="smoozy_pinacolada_440g">ALBANE SMOOZY bouteille pinacolada 440 g</string>
+    <string name="moniich_avocat_amande_440g">ALBANE MONIICH bouteille avocat amande 440 g</string>
+    <string name="moniich_banane_sachet_215g">ALBANE MONIICH sachet Banane 215 g</string>
+
+    <!-- Yogurts & Drinks -->
+    <string name="piko_raibi_grenadine_75g">ALBANE PIKO Raïbi grenadine 75 g</string>
+    <string name="piko_yaourt_boisson_vanille_140g">ALBANE PIKO Yaourt à boire vanille 140 g</string>
+    <string name="yaourt_boisson_fraise_170g">ALBA GO Yaourt à boire Fraise bouteille 170 g</string>
+    <string name="raibi_grenadine_165g">ALBANE Raïbi grenadine 165 g</string>
+    <string name="moniich_carton_fraise_260g">ALBANE MONIICH carton fraise 260 g</string>
+    <string name="nice_ferme_banane_110g">Albane Nice ferme Banane 110 g</string>
+    <string name="yaourt_brosse_fraise_110g">ALBA CREME Yaourt brassé fraise 110 g</string>
+    <string name="piko_brosse_banane_60g">ALBANE PIKO Yaourt brassé banane 60 g</string>
+    <string name="fruits_brosse_cereales_110g">ALBA FRUITS Yaourt brassé céréales 110 g</string>
+    <string name="grec_muesli_110g">ALBANE Yaourt Grec Muesli 110 g</string>
+    <string name="jayed_ferme_vanille_110g">ALBANE JAYED ferme vanille 110 g</string>
+
+
+    <string name="search_placeholder">Rechercher des PDF...</string>
+    <string name="search">Rechercher</string>
+
+    <string name="error_loading_files">Erreur lors du chargement des fichiers : %s</string>
+
+
+    <string name="confirm_generate_invoice">Êtes-vous sûr de vouloir générer la facture ?</string>
+
+
+
+
 
 </resources>

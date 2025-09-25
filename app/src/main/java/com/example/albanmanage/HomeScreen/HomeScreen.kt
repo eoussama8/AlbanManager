@@ -42,6 +42,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.res.stringResource
+import com.example.albanmanage.HistoryScreen.HistoryDao
+import com.example.albanmanage.HistoryScreen.HistoryEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,7 +69,8 @@ data class ProductData(
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreen(currentLanguage: String) {
+fun HomeScreen(currentLanguage: String, historyDao: HistoryDao)
+ {
 
     // Apply language locale dynamically
 
@@ -173,72 +176,73 @@ fun HomeScreen(currentLanguage: String) {
     }
 
     // Invoice Dialog
-    if (showInvoiceDialog) {
-        AlertDialog(
-            onDismissRequest = { showInvoiceDialog = false },
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_invoice),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = AlbaneBlue
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(stringResource(R.string.generate_invoice), color = AlbaneBlue)
-                }
-            },
-            text = {
-                Column {
-                    Text(stringResource(R.string.invoice_summary), fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(stringResource(R.string.products_count, productDataMap.size))
-                    Text(stringResource(R.string.total_before_amount, grandTotalBefore))
-                    Text(
-                        stringResource(R.string.total_after_amount, grandTotalAfter),
-                        color = AlbaneRed,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showInvoiceDialog = false
-                        isGeneratingPdf = true
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val pdfBytes = generatePdfBytes(productDataMap.values.toList(), context)
-                            withContext(Dispatchers.Main) {
-                                val title = context.getString(
-                                    R.string.pdf_invoice_title,
-                                    java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
-                                )
+     if (showInvoiceDialog) {
+         AlertDialog(
+             onDismissRequest = { showInvoiceDialog = false },
+             title = { Text(stringResource(R.string.generate_invoice)) },
+             text = { Text(stringResource(R.string.confirm_generate_invoice)) },
+             confirmButton = {
+                 TextButton(
+                     onClick = {
+                         showInvoiceDialog = false
+                         isGeneratingPdf = true
+                         CoroutineScope(Dispatchers.IO).launch {
+                             val pdfBytes = generatePdfBytes(productDataMap.values.toList(), context)
 
-                                savePdfToDownloads(
-                                    context,
-                                    title,
-                                    pdfBytes
-                                ) {
-                                    isGeneratingPdf = false
-                                }
+                             val title = context.getString(
+                                 R.string.pdf_invoice_title,
+                                 java.text.SimpleDateFormat(
+                                     "yyyy-MM-dd",
+                                     java.util.Locale.getDefault()
+                                 ).format(java.util.Date())
+                             )
 
-                            }
-                        }
-                    }
-                ) {
-                    Text(stringResource(R.string.confirm_generate), color = AlbaneBlue, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showInvoiceDialog = false }) {
-                    Text(stringResource(R.string.cancel), color = AlbaneGrey)
-                }
-            },
-            containerColor = Color.White,
-            shape = RoundedCornerShape(16.dp)
-        )
-    }
-}
+                             // In your AlertDialog confirmButton onClick:
+                             withContext(Dispatchers.Main) {
+                                 savePdfToDownloads(
+                                     context,
+                                     title,
+                                     pdfBytes
+                                 ) { savedFileName ->
+                                     if (savedFileName.isNotEmpty()) {
+                                         // Calculate totals correctly
+                                         val (totalBefore, totalAfter) = calculateGrandTotals(productDataMap)
+
+                                         CoroutineScope(Dispatchers.IO).launch {
+                                             val historyItem = HistoryEntity(
+                                                 actionType = "PDF Generated",
+                                                 fileName = savedFileName, // Use the actual saved filename with timestamp
+                                                 date = System.currentTimeMillis(),
+                                                 totalBefore = totalBefore,
+                                                 totalAfter = totalAfter,
+                                                 productCount = productDataMap.size
+                                             )
+                                             historyDao.insert(historyItem)
+                                         }
+                                     }
+                                     isGeneratingPdf = false
+                                 }
+                             }
+                         }
+                     }
+                 ) {
+                     Text(
+                         stringResource(R.string.confirm_generate),
+                         color = AlbaneBlue,
+                         fontWeight = FontWeight.Bold
+                     )
+                 }
+             },
+             dismissButton = {
+                 TextButton(onClick = { showInvoiceDialog = false }) {
+                     Text(stringResource(R.string.cancel))
+                 }
+             }
+         )
+     }}
+
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EnhancedHeader() {
@@ -603,7 +607,7 @@ fun EnhancedTextField(
             focusedLabelColor = AlbaneBlue,
             unfocusedLabelColor = AlbaneGrey
         )
-,
+        ,
         singleLine = true
     )
 
@@ -636,13 +640,14 @@ fun savePdfToDownloads(
     context: Context,
     fileName: String,
     pdfBytes: ByteArray,
-    onComplete: () -> Unit
+    onComplete: (String) -> Unit
 ) {
+    var savedFileName = ""
     try {
-        val uniqueFileName = "$fileName ${System.currentTimeMillis()}.pdf"
+        savedFileName = "$fileName ${System.currentTimeMillis()}.pdf"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val contentValues = android.content.ContentValues().apply {
-                put(android.provider.MediaStore.Downloads.DISPLAY_NAME, uniqueFileName)
+                put(android.provider.MediaStore.Downloads.DISPLAY_NAME, savedFileName)
                 put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/pdf")
                 put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
             }
@@ -660,25 +665,30 @@ fun savePdfToDownloads(
         } else {
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             if (!downloadsDir.exists() && !downloadsDir.mkdirs()) {
-                throw IOException(context.getString(R.string.pdf_save_failed, "Failed to create Downloads directory"))
+                throw IOException("Failed to create Downloads directory")
             }
-            val file = File(downloadsDir, uniqueFileName)
+            val file = File(downloadsDir, savedFileName)
             FileOutputStream(file).use { it.write(pdfBytes) }
         }
-        Toast.makeText(context, context.getString(R.string.pdf_saved, uniqueFileName), Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.pdf_saved, savedFileName), Toast.LENGTH_SHORT).show()
     } catch (e: SecurityException) {
         Log.e("PDF_ERROR", "Permission error", e)
         Toast.makeText(context, context.getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
+        savedFileName = "" // Failed to save
     } catch (e: IOException) {
         Log.e("PDF_ERROR", "IO error", e)
         Toast.makeText(context, context.getString(R.string.pdf_save_failed, e.message ?: "IO error"), Toast.LENGTH_LONG).show()
+        savedFileName = "" // Failed to save
     } catch (e: Exception) {
         Log.e("PDF_ERROR", "Unexpected error", e)
         Toast.makeText(context, context.getString(R.string.unexpected_error, e.message ?: "Unknown error"), Toast.LENGTH_LONG).show()
+        savedFileName = "" // Failed to save
     } finally {
-        onComplete()
+        // Return the actual filename or empty string if failed
+        onComplete(savedFileName)
     }
 }
+
 fun generatePdfBytes(productList: List<ProductData>, context: Context): ByteArray {
     val document = PdfDocument()
     var pageNumber = 1

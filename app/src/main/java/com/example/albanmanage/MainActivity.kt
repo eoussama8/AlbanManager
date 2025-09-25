@@ -14,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import com.example.albanmanage.HistoryScreen.AppDatabase
+import com.example.albanmanage.HistoryScreen.HistoryDao
 import kotlinx.coroutines.launch
 import com.example.albanmanage.HistoryScreen.HistoryScreen
 import com.example.albanmanage.HomeScreen.HomeScreen
@@ -31,6 +33,8 @@ class MainActivity : ComponentActivity() {
 
         val settingsRepository = SettingsRepository(applicationContext)
 
+        val db = AppDatabase.getDatabase(applicationContext)
+        val historyDao = db.historyDao()
         setContent {
             // Observe selected language
             val selectedLanguage by settingsRepository.language.collectAsState(initial = "en")
@@ -44,8 +48,10 @@ class MainActivity : ComponentActivity() {
                         lifecycleScope.launch {
                             settingsRepository.saveLanguage(newLang)
                         }
-                    }
+                    },
+                    historyDao = historyDao // pass DAO here
                 )
+
             }
         }
     }
@@ -53,9 +59,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreenWithNavigation(
+
     settingsRepository: SettingsRepository,
     currentLanguage: String,
-    onLanguageChanged: (String) -> Unit
+    onLanguageChanged: (String) -> Unit,
+    historyDao: HistoryDao // pass DAO from caller
 ) {
     var selectedIndex by remember { mutableStateOf(0) }
 
@@ -75,11 +83,13 @@ fun MainScreenWithNavigation(
         }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
             when (selectedIndex) {
-                0 -> HomeScreen(currentLanguage) // Pass language
-                1 -> HistoryScreen(currentLanguage)
+                0 -> HomeScreen(currentLanguage, historyDao)
+                1 -> HistoryScreen(historyDao)
                 2 -> SettingsScreen(
                     settingsRepository = settingsRepository,
                     onLanguageChanged = onLanguageChanged
