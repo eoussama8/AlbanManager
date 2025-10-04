@@ -36,6 +36,7 @@ import com.example.albanmanage.ui.theme.AlbaneRed
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import java.io.ByteArrayOutputStream
@@ -203,15 +204,15 @@ fun HomeScreen(currentLanguage: String, historyDao: HistoryDao)
                                      context,
                                      title,
                                      pdfBytes
-                                 ) { savedFileName ->
-                                     if (savedFileName.isNotEmpty()) {
-                                         // Calculate totals correctly
+                                 ) { savedFileName, savedFilePath ->
+                                     if (savedFileName.isNotEmpty() && savedFilePath.isNotEmpty()) {
                                          val (totalBefore, totalAfter) = calculateGrandTotals(productDataMap)
 
                                          CoroutineScope(Dispatchers.IO).launch {
                                              val historyItem = HistoryEntity(
                                                  actionType = "PDF Generated",
-                                                 fileName = savedFileName, // Use the actual saved filename with timestamp
+                                                 fileName = savedFileName,
+                                                 filePath = savedFilePath, // <-- save the actual path or URI here
                                                  date = System.currentTimeMillis(),
                                                  totalBefore = totalBefore,
                                                  totalAfter = totalAfter,
@@ -222,6 +223,7 @@ fun HomeScreen(currentLanguage: String, historyDao: HistoryDao)
                                      }
                                      isGeneratingPdf = false
                                  }
+
                              }
                          }
                      }
@@ -640,52 +642,67 @@ fun savePdfToDownloads(
     context: Context,
     fileName: String,
     pdfBytes: ByteArray,
-    onComplete: (String) -> Unit
+    onComplete: (savedFileName: String, savedFilePath: String) -> Unit
 ) {
     var savedFileName = ""
+    var savedFilePath = ""
     try {
+        // Append timestamp to avoid overwrite
         savedFileName = "$fileName ${System.currentTimeMillis()}.pdf"
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Scoped Storage for Android 10+
             val contentValues = android.content.ContentValues().apply {
-                put(android.provider.MediaStore.Downloads.DISPLAY_NAME, savedFileName)
-                put(android.provider.MediaStore.Downloads.MIME_TYPE, "application/pdf")
-                put(android.provider.MediaStore.Downloads.IS_PENDING, 1)
+                put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, savedFileName)
+                put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                put(android.provider.MediaStore.MediaColumns.IS_PENDING, 1)
             }
+
             val resolver = context.contentResolver
             val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-            uri?.let {
-                resolver.openOutputStream(it).use { output ->
-                    output?.write(pdfBytes)
-                    output?.flush()
-                }
-                contentValues.clear()
-                contentValues.put(android.provider.MediaStore.Downloads.IS_PENDING, 0)
-                resolver.update(uri, contentValues, null, null)
-            } ?: throw IOException("Failed to create file URI")
+                ?: throw IOException("Failed to create file URI")
+
+            resolver.openOutputStream(uri).use { output ->
+                output?.write(pdfBytes)
+                output?.flush()
+            }
+
+            contentValues.clear()
+            contentValues.put(android.provider.MediaStore.MediaColumns.IS_PENDING, 0)
+            resolver.update(uri, contentValues, null, null)
+
+            savedFilePath = uri.toString() // Save URI string for later opening
         } else {
+            // Android 9 and below: use external storage
             val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             if (!downloadsDir.exists() && !downloadsDir.mkdirs()) {
                 throw IOException("Failed to create Downloads directory")
             }
             val file = File(downloadsDir, savedFileName)
             FileOutputStream(file).use { it.write(pdfBytes) }
+
+            savedFilePath = file.absolutePath
         }
-        Toast.makeText(context, context.getString(R.string.pdf_saved, savedFileName), Toast.LENGTH_SHORT).show()
+
+        Toast.makeText(context, "PDF saved: $savedFileName", Toast.LENGTH_SHORT).show()
     } catch (e: SecurityException) {
-        Log.e("PDF_ERROR", "Permission error", e)
-        Toast.makeText(context, context.getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
-        savedFileName = "" // Failed to save
+        Log.e("PDF_ERROR", "Permission denied", e)
+        Toast.makeText(context, "Permission denied: ${e.message}", Toast.LENGTH_LONG).show()
+        savedFileName = ""
+        savedFilePath = ""
     } catch (e: IOException) {
         Log.e("PDF_ERROR", "IO error", e)
-        Toast.makeText(context, context.getString(R.string.pdf_save_failed, e.message ?: "IO error"), Toast.LENGTH_LONG).show()
-        savedFileName = "" // Failed to save
+        Toast.makeText(context, "Failed to save PDF: ${e.message}", Toast.LENGTH_LONG).show()
+        savedFileName = ""
+        savedFilePath = ""
     } catch (e: Exception) {
         Log.e("PDF_ERROR", "Unexpected error", e)
-        Toast.makeText(context, context.getString(R.string.unexpected_error, e.message ?: "Unknown error"), Toast.LENGTH_LONG).show()
-        savedFileName = "" // Failed to save
+        Toast.makeText(context, "Error saving PDF: ${e.message}", Toast.LENGTH_LONG).show()
+        savedFileName = ""
+        savedFilePath = ""
     } finally {
-        // Return the actual filename or empty string if failed
-        onComplete(savedFileName)
+        onComplete(savedFileName, savedFilePath)
     }
 }
 

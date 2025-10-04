@@ -1,20 +1,13 @@
 package com.example.albanmanage.HistoryScreen
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,13 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.albanmanage.R
 import com.example.albanmanage.ui.theme.AlbaneBlue
 import com.example.albanmanage.ui.theme.AlbaneGrey
 import com.example.albanmanage.ui.theme.AlbaneRed
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,13 +41,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-data class HistoryItem(
-    val fileName: String,
-    val date: String,
-    val filePath: String,
-    val fileSize: Long,
-    val timestamp: Long // For proper sorting
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -201,7 +185,7 @@ fun HistoryItemCard(
             .fillMaxWidth()
             .clickable {
                 isClicked = true
-                openPdfByFileName(context, history.fileName) {
+                openPdf(context, history.filePath) {
                     isClicked = false
                 }
             }
@@ -214,14 +198,12 @@ fun HistoryItemCard(
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            // Header Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // PDF Icon with background
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -269,18 +251,9 @@ fun HistoryItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                StatChip(
-                    label = "${history.productCount} products",
-                    color = AlbaneBlue
-                )
-                StatChip(
-                    label = "Before: ${history.totalBefore}",
-                    color = AlbaneRed.copy(alpha = 0.7f)
-                )
-                StatChip(
-                    label = "After: ${history.totalAfter}",
-                    color = Color(0xFF4CAF50)
-                )
+                StatChip("${history.productCount} products", AlbaneBlue)
+                StatChip("Before: ${history.totalBefore}", AlbaneRed.copy(alpha = 0.7f))
+                StatChip("After: ${history.totalAfter}", Color(0xFF4CAF50))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -290,16 +263,12 @@ fun HistoryItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Open Button - Primary action
+                // Open PDF
                 Button(
-                    onClick = {
-                        openPdfByFileName(context, history.fileName)
-                    },
+                    onClick = { openPdf(context, history.filePath) },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AlbaneBlue
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = AlbaneBlue)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_pdf),
@@ -307,22 +276,14 @@ fun HistoryItemCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        "Open PDF",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Text("Open PDF", fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 }
 
-                // Share Button
+                // Share PDF
                 OutlinedButton(
-                    onClick = {
-                        sharePdfByFileName(context, history.fileName)
-                    },
+                    onClick = { sharePdf(context, history.filePath) },
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = AlbaneBlue
-                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AlbaneBlue),
                     border = BorderStroke(1.dp, AlbaneBlue)
                 ) {
                     Icon(
@@ -332,13 +293,11 @@ fun HistoryItemCard(
                     )
                 }
 
-                // Delete Button
+                // Delete
                 OutlinedButton(
                     onClick = { showDeleteDialog = true },
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = AlbaneRed
-                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = AlbaneRed),
                     border = BorderStroke(1.dp, AlbaneRed.copy(alpha = 0.5f))
                 ) {
                     Icon(
@@ -355,37 +314,80 @@ fun HistoryItemCard(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = {
-                Text(
-                    "Delete History Item",
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Text("Are you sure you want to delete \"${history.fileName}\"? This action cannot be undone.")
-            },
+            title = { Text("Delete History Item", fontWeight = FontWeight.Bold) },
+            text = { Text("Are you sure you want to delete \"${history.fileName}\"? This action cannot be undone.") },
             confirmButton = {
                 TextButton(
                     onClick = {
                         showDeleteDialog = false
                         onDeleteClick()
                     },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = AlbaneRed
-                    )
-                ) {
-                    Text("Delete")
-                }
+                    colors = ButtonDefaults.textButtonColors(contentColor = AlbaneRed)
+                ) { Text("Delete") }
             },
             dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
-                ) {
-                    Text("Cancel")
-                }
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") }
             },
             shape = RoundedCornerShape(16.dp)
         )
+    }
+}
+
+// ---- PDF Helper Functions ----
+fun openPdf(context: Context, pathOrUri: String, onComplete: () -> Unit = {}) {
+    try {
+        val uri = if (pathOrUri.startsWith("content://")) {
+            Uri.parse(pathOrUri)
+        } else {
+            val file = File(pathOrUri)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            } else {
+                Uri.fromFile(file)
+            }
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, "application/pdf")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        context.startActivity(Intent.createChooser(intent, "Open PDF"))
+    } catch (e: Exception) {
+        Toast.makeText(context, "Error opening PDF: ${e.message}", Toast.LENGTH_LONG).show()
+    } finally {
+        onComplete()
+    }
+}
+
+fun sharePdf(context: Context, pathOrUri: String) {
+    try {
+        val uri = if (pathOrUri.startsWith("content://")) {
+            Uri.parse(pathOrUri)
+        } else {
+            val file = File(pathOrUri)
+            if (!file.exists()) {
+                Toast.makeText(context, "PDF not found: ${file.name}", Toast.LENGTH_LONG).show()
+                return
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            } else {
+                Uri.fromFile(file)
+            }
+        }
+
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "application/pdf"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            putExtra(Intent.EXTRA_SUBJECT, "AlbanManage Report")
+            putExtra(Intent.EXTRA_TEXT, "Please find attached the report.")
+            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        }
+
+        context.startActivity(Intent.createChooser(intent, "Share PDF"))
+    } catch (e: Exception) {
+        Toast.makeText(context, "Error sharing PDF: ${e.message}", Toast.LENGTH_LONG).show()
     }
 }
 
@@ -515,118 +517,7 @@ private fun findPdfFile(context: Context, fileName: String): File? {
     return null
 }
 
-private fun openPdfByFileName(context: Context, fileName: String, onComplete: () -> Unit = {}) {
-    try {
-        // Debug: Show what we're looking for
-        Toast.makeText(context, "Looking for: $fileName", Toast.LENGTH_SHORT).show()
 
-        val file = findPdfFile(context, fileName)
-
-        if (file == null || !file.exists()) {
-            // More detailed error message
-            val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val message = if (downloadsDir?.exists() == true) {
-                val pdfFiles = downloadsDir.listFiles { _, name -> name.endsWith(".pdf") }?.map { it.name }
-                "PDF not found. Available PDFs in Downloads: ${pdfFiles?.joinToString(", ") ?: "None"}"
-            } else {
-                "Downloads folder not accessible"
-            }
-
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            onComplete()
-            return
-        }
-
-        // Debug: Show what we found
-        Toast.makeText(context, "Found: ${file.name} at ${file.parent}", Toast.LENGTH_SHORT).show()
-
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                FileProvider.getUriForFile(
-                    context,
-                    "${context.packageName}.fileprovider",
-                    file
-                )
-            } catch (e: IllegalArgumentException) {
-                // Fallback if FileProvider fails
-                Toast.makeText(context, "FileProvider error: ${e.message}", Toast.LENGTH_LONG).show()
-                Uri.fromFile(file)
-            }
-        } else {
-            Uri.fromFile(file)
-        }
-
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, "application/pdf")
-            flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-
-        // Check if there's an app to handle PDFs
-        val packageManager = context.packageManager
-        val activities = packageManager.queryIntentActivities(intent, 0)
-
-        if (activities.isNotEmpty()) {
-            context.startActivity(intent)
-            Toast.makeText(context, "Opening ${file.name}", Toast.LENGTH_SHORT).show()
-        } else {
-            // Try with a chooser
-            try {
-                context.startActivity(Intent.createChooser(intent, "Open PDF"))
-            } catch (e: Exception) {
-                Toast.makeText(context, "No PDF reader app found. Please install a PDF reader.", Toast.LENGTH_LONG).show()
-            }
-        }
-    } catch (e: SecurityException) {
-        Toast.makeText(context, "Permission error: ${e.message}", Toast.LENGTH_LONG).show()
-    } catch (e: Exception) {
-        Toast.makeText(
-            context,
-            "Error opening PDF: ${e.message}",
-            Toast.LENGTH_LONG
-        ).show()
-    } finally {
-        onComplete()
-    }
-}
-
-private fun sharePdfByFileName(context: Context, fileName: String) {
-    try {
-        val file = findPdfFile(context, fileName)
-
-        if (file == null || !file.exists()) {
-            Toast.makeText(context, "PDF file not found: $fileName", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                file
-            )
-        } else {
-            Uri.fromFile(file)
-        }
-
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/pdf"
-            putExtra(Intent.EXTRA_STREAM, uri)
-            putExtra(Intent.EXTRA_SUBJECT, "AlbanManage Report - $fileName")
-            putExtra(Intent.EXTRA_TEXT, "Please find attached the report: $fileName")
-            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        }
-
-        context.startActivity(Intent.createChooser(intent, "Share PDF"))
-        Toast.makeText(context, "Sharing ${file.name}", Toast.LENGTH_SHORT).show()
-
-    } catch (e: Exception) {
-        Toast.makeText(
-            context,
-            "Error sharing PDF: ${e.message}",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-}
 
 private fun formatFileSize(size: Long): String {
     val kb = size / 1024.0

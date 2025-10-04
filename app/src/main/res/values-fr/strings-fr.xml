@@ -103,7 +103,7 @@
 
 
     <!-- Desserts -->
-    <string name="flany_caramel_80g">Albane FLANY Caramel 80 g</string>
+    <string name="flany_caramel_80g">FLANY Caramel 80 g</string>
     <string name="creme_dessert_chocolat_80g">ALBA GOURMET Crème dessert chocolat 80 g</string>
     <string name="panna_cotta_fruits_rouges_80g">PANNA COTTA Flan fruits rouges 80 g</string>
 
@@ -113,29 +113,29 @@
     <string name="fresh_pulp_juice_orange_1l">Fresh pulp Jus orange 1 Litre</string>
 
     <!-- Milk & Dairy -->
-    <string name="lait_demiereme_albane_485g">ALBANE Lait demi-écrémé carton 485 g</string>
-    <string name="leben_carton_450g">ALBANE Leben carton 450 g</string>
-    <string name="leben_sachet_450g">ALBANE Leben sachet 450 g</string>
+    <string name="lait_demiereme_albane_485g">Lait demi-écrémé carton 485 g</string>
+    <string name="leben_carton_450g">Leben carton 450 g</string>
+    <string name="leben_sachet_450g">Leben sachet 450 g</string>
     <string name="raib_vanille_450g">RAÏB ALBANE VANILLE 450G</string>
     <string name="lait_uht_entier_12_litre">Lait UHT Albane 1/2 Litre - Entier</string>
 
     <!-- Smoothies & Drinks -->
-    <string name="smoozy_pinacolada_440g">ALBANE SMOOZY bouteille pinacolada 440 g</string>
-    <string name="moniich_avocat_amande_440g">ALBANE MONIICH bouteille avocat amande 440 g</string>
-    <string name="moniich_banane_sachet_215g">ALBANE MONIICH sachet Banane 215 g</string>
+    <string name="smoozy_pinacolada_440g">SMOOZY pinacolada 440 g</string>
+    <string name="moniich_avocat_amande_440g">MONIICH avocat 440g</string>
+    <string name="moniich_banane_sachet_215g">MONIICH Banane 215g</string>
 
     <!-- Yogurts & Drinks -->
-    <string name="piko_raibi_grenadine_75g">ALBANE PIKO Raïbi grenadine 75 g</string>
-    <string name="piko_yaourt_boisson_vanille_140g">ALBANE PIKO Yaourt à boire vanille 140 g</string>
-    <string name="yaourt_boisson_fraise_170g">ALBA GO Yaourt à boire Fraise bouteille 170 g</string>
-    <string name="raibi_grenadine_165g">ALBANE Raïbi grenadine 165 g</string>
-    <string name="moniich_carton_fraise_260g">ALBANE MONIICH carton fraise 260 g</string>
-    <string name="nice_ferme_banane_110g">Albane Nice ferme Banane 110 g</string>
-    <string name="yaourt_brosse_fraise_110g">ALBA CREME Yaourt brassé fraise 110 g</string>
-    <string name="piko_brosse_banane_60g">ALBANE PIKO Yaourt brassé banane 60 g</string>
-    <string name="fruits_brosse_cereales_110g">ALBA FRUITS Yaourt brassé céréales 110 g</string>
-    <string name="grec_muesli_110g">ALBANE Yaourt Grec Muesli 110 g</string>
-    <string name="jayed_ferme_vanille_110g">ALBANE JAYED ferme vanille 110 g</string>
+    <string name="piko_raibi_grenadine_75g">PIKO Raïbi grenadine 75g</string>
+    <string name="piko_yaourt_boisson_vanille_140g">PIKO vanille 140g</string>
+    <string name="yaourt_boisson_fraise_170g">GO Fraise 170g</string>
+    <string name="raibi_grenadine_165g">Raïbi grenadine 165g</string>
+    <string name="moniich_carton_fraise_260g">MONIICH fraise 260 g</string>
+    <string name="nice_ferme_banane_110g">Nice ferme Banane 110 g</string>
+    <string name="yaourt_brosse_fraise_110g">CREME fraise 110 g</string>
+    <string name="piko_brosse_banane_60g">PIKO banane 60 g</string>
+    <string name="fruits_brosse_cereales_110g">FRUITS Yaourt 110 g</string>
+    <string name="grec_muesli_110g">Yaourt Grec Muesli 110 g</string>
+    <string name="jayed_ferme_vanille_110g">JAYED ferme vanille 110 g</string>
 
 
     <string name="search_placeholder">Rechercher des PDF...</string>

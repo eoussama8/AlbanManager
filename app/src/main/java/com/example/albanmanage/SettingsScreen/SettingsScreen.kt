@@ -1,8 +1,6 @@
 package com.example.albanmanage.SettingsScreen
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,9 +34,9 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Observe DataStore value
-    val selectedLanguageFromStore by settingsRepository.language.collectAsState(initial = "en")
-    var selectedLanguage by remember { mutableStateOf(selectedLanguageFromStore) }
+    // Observe language from DataStore directly
+    val selectedLanguage by settingsRepository.language.collectAsState(initial = "en")
+
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     var notificationsEnabled by remember { mutableStateOf(true) }
@@ -53,6 +50,8 @@ fun SettingsScreen(
 
     // Language selection dialog
     if (showLanguageDialog) {
+        var tempSelectedLanguage by remember { mutableStateOf(selectedLanguage) }
+
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
             title = { Text("Select Language", fontWeight = FontWeight.Bold, color = AlbaneBlue) },
@@ -64,15 +63,10 @@ fun SettingsScreen(
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
                                 .clickable {
-                                    selectedLanguage = language.code // Update UI immediately
-                                    coroutineScope.launch {
-                                        settingsRepository.saveLanguage(language.code)
-                                    }
-                                    onLanguageChanged(language.code) // Notify parent
-                                    showLanguageDialog = false
+                                    tempSelectedLanguage = language.code
                                 },
                             colors = CardDefaults.cardColors(
-                                containerColor = if (selectedLanguage == language.code)
+                                containerColor = if (tempSelectedLanguage == language.code)
                                     AlbaneBlue.copy(alpha = 0.1f) else Color.White
                             ),
                             shape = RoundedCornerShape(12.dp)
@@ -85,8 +79,8 @@ fun SettingsScreen(
                                 Text(
                                     language.name,
                                     fontSize = 16.sp,
-                                    fontWeight = if (selectedLanguage == language.code) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (selectedLanguage == language.code) AlbaneBlue else Color.Black
+                                    fontWeight = if (tempSelectedLanguage == language.code) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (tempSelectedLanguage == language.code) AlbaneBlue else Color.Black
                                 )
                             }
                         }
@@ -94,8 +88,19 @@ fun SettingsScreen(
                 }
             },
             confirmButton = {
+                TextButton(onClick = {
+                    showLanguageDialog = false
+                    coroutineScope.launch {
+                        settingsRepository.saveLanguage(tempSelectedLanguage)
+                        onLanguageChanged(tempSelectedLanguage)
+                    }
+                }) {
+                    Text("OK", color = AlbaneBlue)
+                }
+            },
+            dismissButton = {
                 TextButton(onClick = { showLanguageDialog = false }) {
-                    Text("Close", color = AlbaneBlue)
+                    Text("Cancel")
                 }
             }
         )
@@ -140,47 +145,6 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .background(AlbaneBlue, RoundedCornerShape(8.dp)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.Settings, contentDescription = null, tint = Color.White)
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text("⚙️ Settings", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = AlbaneBlue)
-                        Text("Customize your experience", fontSize = 14.sp, color = AlbaneGrey)
-                    }
-                }
-            }
-
-            item {
-                SettingsSection(title = "Preferences") {
-                    SettingsSwitchItem(
-                        icon = "🔔",
-                        title = "Notifications",
-                        subtitle = "Receive app notifications",
-                        checked = notificationsEnabled,
-                        onCheckedChange = { notificationsEnabled = it }
-                    )
-
-                    SettingsSwitchItem(
-                        icon = "💾",
-                        title = "Auto-save",
-                        subtitle = "Automatically save documents",
-                        checked = autoSaveEnabled,
-                        onCheckedChange = { autoSaveEnabled = it }
-                    )
-                }
-            }
-
-            item {
                 SettingsSection(title = "Language") {
                     SettingsItem(
                         icon = "🌍",
@@ -190,22 +154,10 @@ fun SettingsScreen(
                     )
                 }
             }
-
-            item {
-                SettingsSection(title = "Support") {
-                    SettingsItem(
-                        icon = "ℹ️",
-                        title = "About",
-                        subtitle = "App version and info",
-                        onClick = { showAboutDialog = true }
-                    )
-                }
-            }
-
-            item { Spacer(modifier = Modifier.height(32.dp)) }
         }
     }
 }
+
 
 @Composable
 private fun SettingsSection(title: String, content: @Composable () -> Unit) {
